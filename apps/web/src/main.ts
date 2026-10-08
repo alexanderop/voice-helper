@@ -9,11 +9,12 @@ const application = createApplication()
 const app = createApp({
   render: () =>
     h(AppErrorBoundary, null, {
-      default: () => h(App),
+      default: () => h(App, { modelStatus: application.modelStatus }),
     }),
 })
 app.use(application.router).mount('#app')
 if (import.meta.hot)
   import.meta.hot.dispose(() => {
     app.unmount()
+    application.close()
   })

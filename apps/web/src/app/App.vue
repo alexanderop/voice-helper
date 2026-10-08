@@ -1,18 +1,34 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Settings2, BookOpen, WifiOff } from '@lucide/vue'
+import { LineChart, Mic, Settings2, ShieldCheck, WifiOff } from '@lucide/vue'
 import { AppShell, AppNavigation, UiButton, UiBadge } from '@talk-coach/ui'
+import type { ModelStatus } from '../features/speech'
 import { usePwa } from '../platform/pwa/usePwa'
 import { useTheme } from './useTheme'
+
+const { modelStatus } = defineProps<{
+  modelStatus: { readonly value: ModelStatus }
+}>()
 const route = useRoute()
 const router = useRouter()
 const busy = ref(false)
 const { theme, setTheme } = useTheme()
 const pwa = usePwa(busy)
-const items = [{ id: 'settings', label: 'Settings', icon: Settings2 }]
-const pageProps = computed(() => ({ theme: theme.value, setTheme, pwa }))
-const active = computed(() => String(route.name ?? 'settings'))
+const items = [
+  { id: 'today', label: 'Today', icon: Mic },
+  { id: 'progress', label: 'Progress', icon: LineChart },
+  { id: 'settings', label: 'Settings', icon: Settings2 },
+]
+const settingsProps = computed(() =>
+  route.name === 'settings' ? { theme: theme.value, setTheme, pwa } : {},
+)
+const active = computed(() =>
+  route.name === 'result' ? 'progress' : String(route.name ?? 'today'),
+)
+const offlineReady = computed(
+  () => modelStatus.value.status === 'ready' && modelStatus.value.offline,
+)
 function navigate(id: string) {
   if (route.name === id) {
     window.scrollTo({ top: 0, behavior: 'instant' })
@@ -23,25 +39,23 @@ function navigate(id: string) {
 </script>
 <template>
   <AppShell>
-    <template #header
-      ><div class="brand-header">
-        <a
-          :href="router.resolve({ name: 'settings' }).href"
-          class="brand"
-          @click.prevent="navigate('settings')"
-          ><span class="brand-mark"
-            ><BookOpen :size="21" aria-hidden="true" /></span
-          >Talk Coach</a
-        >
-        <div class="connection-status">
-          <UiBadge v-if="!pwa.online.value" tone="warning"
-            ><WifiOff :size="12" aria-hidden="true" />Offline</UiBadge
-          ><UiBadge v-else-if="pwa.offlineReady.value" tone="success"
-            ><span class="status-dot" />Offline ready</UiBadge
-          ><span v-else class="muted">Your own little corner.</span>
-        </div>
-      </div></template
-    >
+    <template #header>
+      <a
+        :href="router.resolve({ name: 'today' }).href"
+        class="brand"
+        @click.prevent="navigate('today')"
+        ><span class="brand-mark" aria-hidden="true">t.</span>Talk Coach</a
+      >
+      <UiBadge v-if="!pwa.online.value && !offlineReady" tone="warning"
+        ><WifiOff :size="14" aria-hidden="true" />Offline</UiBadge
+      >
+      <UiBadge v-else-if="offlineReady" tone="success" data-testid="app-status"
+        ><ShieldCheck :size="14" aria-hidden="true" />Offline · ready</UiBadge
+      >
+      <UiBadge v-else data-testid="app-status"
+        ><ShieldCheck :size="14" aria-hidden="true" />On device</UiBadge
+      >
+    </template>
     <template #navigation
       ><AppNavigation
         :items="items"
@@ -49,33 +63,22 @@ function navigate(id: string) {
         @update:model-value="navigate"
     /></template>
     <RouterView v-slot="{ Component }"
-      ><component :is="Component" v-bind="pageProps"
+      ><component :is="Component" v-bind="settingsProps"
     /></RouterView>
     <aside
       v-if="pwa.updateAvailable.value && !pwa.deferred.value"
       class="update-notice"
       aria-label="App update"
     >
-      <div>
-        <strong>A fresh version is ready.</strong>
-        <p>
-          {{
-            busy
-              ? 'Finish this drill before updating.'
-              : 'Update when you are ready. Your drills stay here.'
-          }}
-        </p>
-      </div>
+      <p><strong>A new version is ready.</strong> Your drills stay here.</p>
       <div class="update-actions">
         <UiButton
           variant="ghost"
+          size="sm"
           :disabled="pwa.updating.value"
           @click="pwa.deferred.value = true"
           >Later</UiButton
-        ><UiButton
-          :disabled="busy"
-          :loading="pwa.updating.value"
-          @click="pwa.update"
+        ><UiButton size="sm" :loading="pwa.updating.value" @click="pwa.update"
           >Update now</UiButton
         >
       </div>

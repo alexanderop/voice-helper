@@ -7,11 +7,11 @@ import AppErrorBoundary from './AppErrorBoundary.vue'
 describe('AppErrorBoundary', () => {
   afterEach(() => vi.unstubAllGlobals())
 
-  it('unexpected child errors offer focused recovery without leaking note contents', async () => {
+  it('unexpected child errors offer focused recovery without leaking transcript text', async () => {
     vi.stubGlobal('__APP_VERSION__', 'test-build')
     const Broken = defineComponent({
       setup() {
-        throw new Error('Private note text must not be exposed')
+        throw new Error('Private transcript text must not be exposed')
       },
       render() {
         return null
@@ -27,6 +27,6 @@ describe('AppErrorBoundary', () => {
     await page.getByText('Safe diagnostics').click()
     const content = page.getByRole('alert').element().textContent
     expect(content).toContain('test-build')
-    expect(content).not.toContain('Private note text')
+    expect(content).not.toContain('Private transcript text')
   })
 })

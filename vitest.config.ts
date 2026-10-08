@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
 import { playwright } from '@vitest/browser-playwright'
 import { fileURLToPath } from 'node:url'
 import { goOfflineFor } from './vitest.commands'
@@ -29,7 +28,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [vue(), tailwindcss()],
+        plugins: [vue()],
         optimizeDeps: {
           include: ['vue', '@talk-coach/ui > @lucide/vue'],
         },

@@ -20,3 +20,12 @@ export type Transcriber = {
 export type AudioDecoder = {
   decode(audio: Blob): Promise<Result<Float32Array, 'decode-failed'>>
 }
+
+export type Recording = {
+  stop(): Promise<Blob>
+  cancel(): void
+}
+
+export type Microphone = {
+  start(): Promise<Result<Recording, 'mic-denied' | 'mic-unavailable'>>
+}

@@ -24,7 +24,7 @@ export function useTheme() {
       .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
       ?.setAttribute(
         'content',
-        getComputedStyle(root).getPropertyValue('--color-background').trim(),
+        getComputedStyle(root).getPropertyValue('--bg').trim(),
       )
   })
   return { theme, setTheme }

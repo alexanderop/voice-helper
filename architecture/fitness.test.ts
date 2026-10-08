@@ -75,7 +75,10 @@ describe('given the app components', () => {
 
 describe('given the persistence adapters', () => {
   const adapters = sourceFiles(features, ['.ts']).filter(
-    (file) => file.includes('/adapters/') && !file.endsWith('.test.ts'),
+    (file) =>
+      file.includes('/adapters/') &&
+      !file.endsWith('.test.ts') &&
+      /\bindexedDB\b|\bIDB[A-Z]\w*/.test(read(file)),
   )
 
   it('should find adapters to check', () => {

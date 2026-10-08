@@ -7,7 +7,7 @@ const {
   type = 'button',
 } = defineProps<{
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  size?: 'sm' | 'md' | 'icon'
+  size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'

@@ -56,9 +56,9 @@ section {
   max-width: 42rem;
   margin: 10vh auto;
   padding: 24px;
-  color: var(--color-foreground);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 18px;
 }
 p {

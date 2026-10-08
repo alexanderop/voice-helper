@@ -3,12 +3,15 @@ import { ref } from 'vue'
 import { UiButton, UiCard, UiBadge } from '../index'
 const dark = ref(false)
 const tokens = [
-  'background',
+  'bg',
   'surface',
-  'foreground',
+  'ink',
   'muted',
-  'primary',
-  'border',
+  'accent',
+  'soft',
+  'highlight',
+  'line',
+  'line-strong',
 ]
 </script>
 <template>
@@ -18,42 +21,36 @@ const tokens = [
         :data-theme="dark ? 'dark' : 'light'"
         class="story-layout"
         style="
-          background: var(--color-background);
-          color: var(--color-foreground);
+          background: var(--bg);
+          color: var(--ink);
           min-height: 100vh;
           max-width: none;
         "
       >
         <header>
-          <UiBadge tone="success">Starter UI</UiBadge>
+          <UiBadge tone="success">Plainspoken</UiBadge>
           <h1
             style="
-              font-size: 36px;
-              letter-spacing: -1.5px;
-              font-weight: 600;
+              font-family: var(--font-display);
+              font-size: 2.4rem;
+              letter-spacing: -0.04em;
               margin-bottom: 10px;
             "
           >
-            A quieter place to build.
+            One thought. Spoken clearly.
           </h1>
-          <p
-            style="
-              color: var(--color-muted);
-              max-width: 460px;
-              line-height: 1.7;
-            "
-          >
-            Geist typography, restrained teal, and generous spacing. A small
-            foundation for interfaces that feel at home.
+          <p style="color: var(--muted); max-width: 460px; line-height: 1.7">
+            Warm paper, serif headlines, and restrained green. Language comes
+            before measurement.
           </p>
         </header>
         <div class="story-row">
           <div v-for="token in tokens" :key="token" style="width: 100px">
             <div
               :style="{
-                background: `var(--color-${token})`,
+                background: `var(--${token})`,
                 height: '64px',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--line)',
                 borderRadius: '12px',
               }"
             />

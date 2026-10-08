@@ -1,7 +1,7 @@
-export {
-  createDrillService,
-  type DrillService,
-} from './application/createDrillService'
+export { createDrillService } from './application/createDrillService'
 export { createIndexedDbDrills } from './adapters/indexeddb/createIndexedDbDrills'
 export { SPEECH_SAMPLE_RATE } from './ports/ports'
-export type { AudioDecoder, Transcriber } from './ports/ports'
+export type { AudioDecoder } from './ports/ports'
+export { default as TodayPage } from './ui/TodayPage.vue'
+export { default as ResultPage } from './ui/ResultPage.vue'
+export { default as ProgressPage } from './ui/ProgressPage.vue'
