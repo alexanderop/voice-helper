@@ -16,7 +16,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'http://127.0.0.1:42785',
+    baseURL: 'http://127.0.0.1:42785/voice-helper/',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
@@ -28,7 +28,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'node scripts/serve-e2e.mjs',
-    url: 'http://127.0.0.1:42785',
+    url: 'http://127.0.0.1:42785/voice-helper/',
     reuseExistingServer: false,
     timeout: 120_000,
   },

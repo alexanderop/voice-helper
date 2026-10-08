@@ -15,43 +15,43 @@ const check = () =>
   spawnSync(process.execPath, [checker], { cwd: directory, encoding: 'utf8' })
 try {
   write(
-    'apps/web/src/features/notes/domain/note.ts',
-    'export type Note = { title: string }',
+    'apps/web/src/features/drills/domain/drill.ts',
+    'export type Drill = { transcript: string }',
   )
   write(
-    'apps/web/src/features/notes/ports/store.ts',
-    "import type { Result } from '@talk-coach/result'; import type { Note } from '../domain/note'; export type Store = { list(): Result<Note[], never> }",
+    'apps/web/src/features/drills/ports/store.ts',
+    "import type { Result } from '@talk-coach/result'; import type { Drill } from '../domain/drill'; export type Store = { list(): Result<Drill[], never> }",
   )
   assert.equal(check().status, 0, 'Valid inward imports must pass')
   const violations = [
     [
-      'apps/web/src/features/notes/domain/invalid.ts',
+      'apps/web/src/features/drills/domain/invalid.ts',
       "import { ref } from 'vue'",
       'Core code depends only',
     ],
     [
-      'apps/web/src/features/notes/domain/browser.ts',
+      'apps/web/src/features/drills/domain/browser.ts',
       'export const size = window.innerWidth',
       'browser global',
     ],
     [
-      'apps/web/src/features/notes/domain/outward.ts',
+      'apps/web/src/features/drills/domain/outward.ts',
       "import '../application/service'",
       'Domain cannot depend',
     ],
     [
-      'apps/web/src/features/notes/ui/invalid.vue',
+      'apps/web/src/features/drills/ui/invalid.vue',
       "<script setup>import '../adapters/storage'</script>",
       'Feature UI receives',
     ],
     [
       'apps/web/src/features/settings/ui/private.ts',
-      "import '../../notes/domain/note'",
+      "import '../../drills/domain/drill'",
       'Use another feature public index',
     ],
     [
       'packages/ui/src/invalid.ts',
-      "import '../../../apps/web/src/features/notes/domain/note'",
+      "import '../../../apps/web/src/features/drills/domain/drill'",
       'UI package cannot depend',
     ],
     [
@@ -61,11 +61,11 @@ try {
     ],
     [
       'packages/composables/src/app.ts',
-      "import '../../../apps/web/src/features/notes/domain/note'",
+      "import '../../../apps/web/src/features/drills/domain/drill'",
       'Composables depend only',
     ],
     [
-      'apps/web/src/features/notes/domain/composables.ts',
+      'apps/web/src/features/drills/domain/composables.ts',
       "import '@talk-coach/composables'",
       'Core code depends only',
     ],

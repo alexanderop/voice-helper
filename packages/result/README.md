@@ -7,7 +7,7 @@ A vendored copy of [better-result](https://github.com/dmmulroy/better-result) by
 | Version  | 3.0.1                                      |
 | Commit   | `4a654fa6dacb8bf75a6283772bba0c81afcfa64a` |
 
-`src/` matches upstream except for one patch that lets it compile under the starter's `erasableSyntaxOnly` and `exactOptionalPropertyTypes` flags: `Ok` and `Err` assign `value` and `error` in the constructor body instead of using parameter properties, and optional `issues` and `signal` properties also accept `undefined`. Runtime behavior is unchanged. The Vitest and fast-check tests are unchanged. Prettier and Oxlint skip `src/` so a later update stays close to a plain copy. `pnpm test:unit` runs its runtime tests and `src/*.test-d.ts` type tests; `pnpm typecheck` checks it with `tsconfig.json` in this folder.
+`src/` matches upstream except for one patch that lets it compile under this repository's `erasableSyntaxOnly` and `exactOptionalPropertyTypes` flags: `Ok` and `Err` assign `value` and `error` in the constructor body instead of using parameter properties, and optional `issues` and `signal` properties also accept `undefined`. Runtime behavior is unchanged. The Vitest and fast-check tests are unchanged. Prettier and Oxlint skip `src/` so a later update stays close to a plain copy. `pnpm test:unit` runs its runtime tests and `src/*.test-d.ts` type tests; `pnpm typecheck` checks it with `tsconfig.json` in this folder.
 
 ## Update
 

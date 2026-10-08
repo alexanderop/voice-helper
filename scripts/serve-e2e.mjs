@@ -3,6 +3,8 @@ import { createServer } from 'node:http'
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve, extname, sep } from 'node:path'
 
+// Same subpath as GitHub Pages, so the journeys prove the base path.
+const BASE = '/voice-helper/'
 const directory = resolve('.test-builds', 'e2e')
 const build = spawnSync(
   'pnpm',
@@ -16,7 +18,10 @@ const build = spawnSync(
     directory,
     '--emptyOutDir',
   ],
-  { stdio: 'inherit', env: { ...process.env, VITE_APP_VERSION: 'e2e' } },
+  {
+    stdio: 'inherit',
+    env: { ...process.env, VITE_APP_VERSION: 'e2e', VITE_BASE_PATH: BASE },
+  },
 )
 if (build.status !== 0) process.exit(build.status ?? 1)
 const types = {
@@ -25,7 +30,7 @@ const types = {
   '.css': 'text/css',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
-  '.woff2': 'font/woff2',
+  '.wasm': 'application/wasm',
   '.webmanifest': 'application/manifest+json',
   '.json': 'application/json',
 }
@@ -34,9 +39,13 @@ function sendStatus(response, status) {
   response.end()
 }
 function resolveFile(pathname) {
+  if (!pathname.startsWith(BASE)) return { status: 404 }
   let file
   try {
-    file = resolve(directory, '.' + decodeURIComponent(pathname))
+    file = resolve(
+      directory,
+      '.' + decodeURIComponent(pathname.slice(BASE.length - 1)),
+    )
   } catch {
     return { status: 400 }
   }
@@ -64,7 +73,7 @@ const server = createServer((request, response) => {
   response.end(readFileSync(file))
 })
 server.listen(42785, '127.0.0.1', () =>
-  console.log('Production PWA server ready'),
+  console.log(`Production PWA server ready at ${BASE}`),
 )
 for (const signal of ['SIGINT', 'SIGTERM'])
   process.on(signal, () => server.close(() => process.exit(0)))

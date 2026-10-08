@@ -1,44 +1,48 @@
 # Architecture
 
-The app composes concrete capabilities. Features own their domain rules, application services, outbound ports, adapters, and Vue UI. The UI workspace has no application dependencies.
+Talk Coach is one Vue app in `apps/web`. Each feature owns its domain rules, application service, ports, adapters, and UI. `app/bootstrap.ts` builds the concrete adapters and passes them to the routes as props.
 
-## Design decision
+## Features
 
-Three independent design sketches compared a focused feature service, a command/snapshot session, and a feature runtime. An independent same-model judge scored them 24, 18, and 18 out of 25 for simplicity, ownership, durability, UI reuse, and implementability. The focused service is the base. Vue already owns reactive UI state, so a second subscription system adds no useful capability here.
+- `features/drills` owns the product. `domain/` holds the `Drill` and `Analysis` schemas, the lexicon of fillers and hedges, the coaching rules, caption parsing, pause detection, the practice helpers, and the session state machine. `application/createDrillService.ts` decodes, transcribes, analyzes, and saves through the ports in `ports/ports.ts`. `adapters/indexeddb` stores drills. `ui/` holds Today, Result, and Progress.
+- `features/speech` owns the Whisper model. `domain/model.ts` names the model, the filler prompt, the cached files, and the `ModelStatus` union. `adapters/whisper.worker.ts` runs transformers.js in a Web Worker. `adapters/createWhisperTranscriber.ts` talks to that worker and implements the drills `Transcriber` port. `adapters/modelCache.ts` checks the Cache API. `ui/SetupPage.vue` is the first-launch screen.
+- `features/settings` owns the theme picker, the data export and delete, and the diagnostics panel. It receives everything through props.
 
-The design adopts explicit cleanup and update guards from the runtime candidate. Writes must commit before success is reported. Revision checks reject stale edits. In-flight reads are invalidated when a mutation begins. Refresh failure after a committed write is a separate UI concern.
+`platform/audio` records from the microphone and decodes audio to 16 kHz mono. `platform/device` reads diagnostics and asks for persistent storage. `platform/pwa` registers the service worker. Feature UI never imports `platform/`. The app layer passes these capabilities in.
 
-The notes feature owns its database adapter because no second feature needs a shared transaction. A shared database layer can be extracted when that requirement exists. No generic repository, DI container, or event bus is included.
+## Data shape
 
-## Ownership
+A `Drill` is `{ id, kind, prompt, recordedAt, durationMs, transcript, analysis }`. `kind` is `drill`, `opening`, `closing`, or `import`. `durationMs` is `null` for text captions without timing. `Analysis` holds the word count, words per minute, the pause count, a count per group (`yeah`, `um`, `hedge`), and a count per term. A `null` pace or pause count means unknown, not zero.
 
-- `app` constructs adapters, injects dependencies, and owns routing and browser lifecycle.
-- `features/notes/domain` owns validated note data and pure rules.
-- `features/notes/application` owns user actions and receives storage, clock, and ID capabilities.
-- `features/notes/ports` declares persistence contracts.
-- `features/notes/adapters` implements those contracts with native IndexedDB and validates stored rows.
-- `features/notes/ui` owns reactive view state and calls supplied application capabilities.
-- `platform/pwa` owns service-worker registration, installation, and update readiness.
-- `packages/ui` owns reusable presentation, semantic styles, accessible interactions, and Histoire stories.
-- `packages/result` owns the `Result` type that domain, ports, application, and adapters return for expected failures.
-- `packages/composables` owns small Vue composables for browser events, media queries, connectivity, visibility, and validated `localStorage`. It depends only on Vue, Valibot, and `@talk-coach/result`; features may import it, but `packages/ui`, domain, application, and ports may not.
+Valibot schemas define `Drill` and `Analysis`. The IndexedDB adapter parses every row on read and skips a row that fails. A write reports success only after its transaction commits. Raw audio is never stored.
 
-`pnpm check:architecture` enforces import directions. Pure code imports only Valibot and `@talk-coach/result` outside its feature, and does not use browser globals or Vue. UI components do not discover databases or feature adapters.
+## Rules as tables
 
-## Verification
+- `domain/lexicon.ts` lists every counted phrase with its group. The matcher tries multi-word phrases first, so "and yeah" counts once, not as "yeah". "Kind of" and "sort of" do not count after a determiner such as "what". The file explains which words are left out and why.
+- `domain/coaching.ts` is an ordered list of rules. The first rule that returns a line wins: hedges in the first three sentences, a filler rate 20% lower or higher than the previous drill of the same kind, three or more "yeah", a take with no fillers, and a fallback.
+- `domain/session.ts` is the recording lifecycle: `idle`, `requesting-mic`, `recording`, `processing`, `done`, and `error`. A table names the events each state accepts. Any other event leaves the state unchanged.
+- `speech/domain/model.ts` is the model lifecycle: `checking`, `missing`, `downloading`, `loading`, `ready`, and `failed`.
 
-Node tests cover domain rules and application outcomes with explicit deterministic dependencies. Browser tests exercise real IndexedDB and Vue interaction. Playwright drives the production application, offline reopening, and a real service-worker upgrade. Histoire provides interactive examples and visual review; it is not the automated test runner.
+## Speech model
 
-## Recovery and portability
+The worker loads `onnx-community/whisper-base.en` at `q8` on the WASM backend. transformers.js 3.8.1 has no `prompt_ids` option, so the worker builds `decoder_input_ids` by hand: `<|startofprev|>`, the filler prompt, `<|startoftranscript|>`, and `<|notimestamps|>`. It cuts audio into 30-second chunks and calls `generate` with `max_new_tokens: 220` and `no_repeat_ngram_size: 5`, as `prompt.mjs` in the research did.
 
-Notes use IndexedDB schema version 2. Existing version 1 rows remain valid: `deletedAt` is optional, so upgrading does not rewrite or remove saved notes. An old connection receives `versionchange` and closes; older clients cannot reopen version 1 and silently remove trash metadata. Revision checks remain atomic within each write transaction.
+transformers.js stores the model in the `transformers-cache` Cache API bucket. The ONNX runtime binary is served from `ort/` on this origin, not from jsDelivr. The service worker keeps it in the `talk-coach-onnx-runtime` bucket with a cache-first rule. Neither the model nor the binary is in the precache. The app shows **Offline · ready** only when `modelCache.ts` finds all seven model files and the binary locally.
 
-Normal deletion moves a note to Trash. Undo and Restore create another revision; permanent deletion requires explicit confirmation. Conflicting edits keep the local draft. Users can save a new copy, inspect the latest stored note, or explicitly replace that inspected revision. A second concurrent change still rejects replacement.
+WebGPU is not used. The research picked q8 because q4 is larger for these exports, and q8 on WebGPU is not a tested path. GitHub Pages cannot send cross-origin isolation headers, so the WASM backend runs on one thread. Diagnostics shows both facts.
 
-Settings receives the notes service through app composition. Backups include active and trashed notes. The versioned JSON envelope is validated with Valibot before any write. Import assigns fresh IDs and commits the entire batch in one transaction; it never replaces existing notes. Re-importing a backup intentionally creates more copies. Both import and export support up to 5,000 notes and a 10 MB file. Export checks these limits before starting a download; an oversized notebook remains untouched and reports that its full backup cannot be produced. There is no partial or automatic replacement import.
+## Import rules
 
-Search state is a Vue ref keyed by the injected notes service, so route round trips retain the query without persisting UI state in the database. Normal navigation starts at the top; reselecting the active navigation item also scrolls to the top. Browser history uses its saved scroll position after the asynchronous content grows to the required height. A bounded wait allows clamping when content was removed; newer navigations cancel stale restoration. Skip links focus the main landmark without changing the hash route.
+`pnpm check:architecture` enforces these directions:
 
-Shared dialogs restore focus to a main-landmark fallback if the original control was removed. Their mobile drag handle requests closure through the same controlled open event as Escape and Close; the feature still decides whether pending writes or an unsaved draft prevent dismissal. Validation messages belong to their fields, focus the first invalid input, and use theme contrast tokens.
+- Domain, application, and ports import only Valibot, `@talk-coach/result`, and other core files. They use no browser globals.
+- A feature imports another feature only through its `index.ts`.
+- Feature UI does not import adapters or `platform/`.
+- `packages/ui` does not import the app. `packages/composables` imports only Vue, Valibot, and `@talk-coach/result`.
 
-The root Vue error boundary replaces a failed interface with reload recovery. Its copyable diagnostics contain only the application name, build version, and a generic failure label. It does not capture exception messages or note contents. Saved data is retained, but recovery cannot promise to preserve an unsaved draft after an unexpected interface failure.
+`scripts/test-architecture.mjs` writes nine forbidden imports into a temporary tree and checks that the checker rejects each one. `architecture/fitness.test.ts` checks that every feature has an `index.ts`, every component stays under 300 lines, every IndexedDB adapter imports Valibot, and no file suppresses a lint or type error.
+
+## Follow-ups
+
+- Pauses come from loudness. Silero VAD would separate breath and room noise from speech, at the cost of a dependency and a second model.
+- The diagnostics panel keeps the last transcription time in memory. A relaunch clears it.
