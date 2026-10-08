@@ -1,0 +1,16 @@
+{
+  "name": "@starter/composables",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.26"
+  },
+  "dependencies": {
+    "@starter/result": "workspace:*",
+    "valibot": "1.5.0"
+  }
+}

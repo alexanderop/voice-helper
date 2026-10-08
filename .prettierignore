@@ -1,0 +1,13 @@
+pnpm-lock.yaml
+.features-gen
+.histoire
+.histoire-dist
+dist
+test-results
+playwright-report
+docs/decisions.tsv
+
+.test-builds
+
+.vitest
+packages/result/src

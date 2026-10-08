@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.histoire/
+.histoire-dist/
+.features-gen/
+test-results/
+playwright-report/
+coverage/
+*.local
+.env*
+.DS_Store
+
+.test-builds/
+
+.vitest/

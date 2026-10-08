@@ -1,0 +1,259 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["packages/result/src/**"],
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "vue",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "rules": {
+    "import/no-cycle": "error",
+    "import/no-unassigned-import": [
+      "error",
+      {
+        "allow": ["**/*.css"]
+      }
+    ],
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "never"
+      }
+    ],
+    "typescript/no-non-null-assertion": "error",
+    "typescript/ban-ts-comment": "error",
+    "typescript/consistent-type-definitions": ["error", "type"],
+    "eslint/no-console": [
+      "error",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
+    "eslint/no-nested-ternary": "error",
+    "eslint/complexity": [
+      "error",
+      {
+        "max": 10
+      }
+    ],
+    "eslint/max-depth": [
+      "error",
+      {
+        "max": 3
+      }
+    ],
+    "eslint/max-params": [
+      "error",
+      {
+        "max": 3
+      }
+    ],
+    "eslint/max-lines": [
+      "error",
+      {
+        "max": 300,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "eslint/no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["__APP_VERSION__", "_tag"]
+      }
+    ],
+    "oxc/no-map-spread": "off",
+    "unicorn/require-post-message-target-origin": "off",
+    "vue/max-props": [
+      "error",
+      {
+        "maxProps": 6
+      }
+    ],
+    "vue/define-props-destructuring": "error",
+    "vue/define-props-declaration": "error",
+    "vue/define-emits-declaration": "error",
+    "vue/require-typed-ref": "error",
+    "vue/prefer-import-from-vue": "error",
+    "vitest/no-focused-tests": "error",
+    "vitest/no-disabled-tests": "error",
+    "vitest/no-commented-out-tests": "error",
+    "vitest/consistent-test-it": [
+      "error",
+      {
+        "fn": "it"
+      }
+    ],
+    "vitest/require-top-level-describe": "error",
+    "vitest/max-nested-describe": [
+      "error",
+      {
+        "max": 2
+      }
+    ],
+    "vitest/no-conditional-in-test": "error",
+    "vitest/no-standalone-expect": "error",
+    "vitest/prefer-to-be": "error",
+    "vitest/prefer-to-have-length": "error",
+    "vitest/prefer-to-contain": "error",
+    "vitest/prefer-hooks-on-top": "error",
+    "vitest/prefer-hooks-in-order": "error",
+    "vitest/no-duplicate-hooks": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/await-thenable": "error",
+    "typescript/require-await": "error",
+    "typescript/return-await": ["error", "in-try-catch"],
+    "typescript/switch-exhaustiveness-check": "error",
+    "typescript/no-unnecessary-condition": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/only-throw-error": "error",
+    "typescript/prefer-promise-reject-errors": "error",
+    "typescript/restrict-template-expressions": "error",
+    "typescript/no-base-to-string": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/prefer-optional-chain": "error",
+    "typescript/no-deprecated": "error"
+  },
+  "overrides": [
+    {
+      "files": [
+        "apps/playground/src/features/*/domain/**",
+        "apps/playground/src/features/*/ports/**"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["vue", "vue-router", "@starter/ui"],
+                "message": "Domain and ports stay framework-free."
+              },
+              {
+                "group": ["**/application/**", "**/adapters/**", "**/ui/**"],
+                "message": "Domain and ports must not import outer layers."
+              }
+            ]
+          }
+        ],
+        "no-restricted-globals": [
+          "error",
+          "window",
+          "document",
+          "navigator",
+          "indexedDB",
+          "localStorage",
+          "crypto",
+          "fetch"
+        ],
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "Date",
+            "property": "now",
+            "message": "Inject a clock."
+          }
+        ]
+      }
+    },
+    {
+      "files": ["apps/playground/src/features/*/application/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["vue", "**/adapters/**", "**/ui/**"],
+                "message": "Application talks to ports, not adapters or UI."
+              }
+            ]
+          }
+        ],
+        "no-restricted-globals": [
+          "error",
+          "window",
+          "indexedDB",
+          "localStorage",
+          "crypto",
+          "fetch"
+        ],
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "Date",
+            "property": "now",
+            "message": "Inject a clock."
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/ui/src/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/apps/**", "**/features/**", "valibot"],
+                "message": "packages/ui must not know about the app."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "eslint/no-await-in-loop": "off",
+        "unicorn/prefer-add-event-listener": "off",
+        "unicorn/consistent-function-scoping": "off",
+        "eslint/max-lines": "off",
+        "typescript/require-await": "off",
+        "typescript/no-unsafe-assignment": "off"
+      }
+    },
+    {
+      "files": ["scripts/**"],
+      "rules": {
+        "eslint/no-console": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unnecessary-condition": "off"
+      }
+    },
+    {
+      "files": ["e2e/**/*.steps.ts"],
+      "rules": {
+        "eslint/max-params": "off"
+      }
+    },
+    {
+      "files": ["apps/playground/src/app/**"],
+      "rules": {
+        "typescript/no-unsafe-assignment": "off"
+      }
+    }
+  ]
+}
