@@ -61,7 +61,10 @@ export function diagnosticRows({
       value: speech.loadMs === null ? 'not loaded' : seconds(speech.loadMs),
     },
     { label: 'Last transcription', value: transcriptionRow(speech) },
-    { label: 'JS heap in use', value: megabytes(device.jsHeapMb) },
+    {
+      label: 'JS heap (page, not the worker)',
+      value: megabytes(device.jsHeapMb),
+    },
     {
       label: 'Device memory',
       value:
