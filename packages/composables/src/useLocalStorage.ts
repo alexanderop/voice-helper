@@ -1,5 +1,5 @@
 import { shallowRef, type Ref } from 'vue'
-import type { Result } from '@starter/result'
+import type { Result } from '@talk-coach/result'
 import * as v from 'valibot'
 import {
   readStorage,

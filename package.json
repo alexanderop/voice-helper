@@ -1,5 +1,5 @@
 {
-  "name": "my-vue-pwa-starter",
+  "name": "talk-coach",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.28.2",
@@ -7,11 +7,11 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "pnpm --filter @starter/playground dev",
-    "dev:ui": "pnpm --filter @starter/ui dev",
+    "dev": "pnpm --filter @talk-coach/web dev",
+    "dev:ui": "pnpm --filter @talk-coach/ui dev",
     "build": "pnpm build:app && pnpm build:ui",
-    "build:app": "pnpm --filter @starter/playground build",
-    "build:ui": "pnpm --filter @starter/ui build",
+    "build:app": "pnpm --filter @talk-coach/web build",
+    "build:ui": "pnpm --filter @talk-coach/ui build",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p packages/result/tsconfig.json",
     "lint": "oxlint --type-aware --report-unused-disable-directives-severity=error apps packages scripts e2e architecture && eslint . && pnpm check:architecture && pnpm check:dead-code",
     "check:architecture": "node scripts/test-architecture.mjs && node scripts/check-architecture.mjs",

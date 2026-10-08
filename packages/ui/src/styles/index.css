@@ -1,9 +1,12 @@
-@import '@fontsource-variable/geist';
 @import 'tailwindcss';
 @source '../';
 
 :root {
-  font-family: 'Geist Variable', system-ui, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
   color: var(--color-foreground);
   background: var(--color-background);
   font-synthesis: none;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UiButton, UiCard, UiBadge, UiInput } from '../index'
+import { UiButton, UiCard, UiBadge } from '../index'
 const dark = ref(false)
 const tokens = [
   'background',
@@ -61,8 +61,7 @@ const tokens = [
           </div>
         </div>
         <UiCard style="max-width: 460px; display: grid; gap: 20px"
-          ><UiInput label="A clear label" placeholder="A useful hint" />
-          <div class="story-row">
+          ><div class="story-row">
             <UiButton>Primary action</UiButton
             ><UiButton variant="secondary">Secondary</UiButton>
           </div></UiCard

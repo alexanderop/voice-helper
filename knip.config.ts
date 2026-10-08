@@ -15,7 +15,7 @@ export default {
       entry: ['scripts/*.mjs', 'e2e/**/*.steps.ts'],
       project: ['scripts/**', 'e2e/**', 'architecture/**', '*.config.{js,ts}'],
     },
-    'apps/playground': {
+    'apps/web': {
       project: ['src/**/*.{ts,vue}'],
     },
     'packages/composables': {

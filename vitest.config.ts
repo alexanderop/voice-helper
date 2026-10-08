@@ -31,16 +31,12 @@ export default defineConfig({
       {
         plugins: [vue(), tailwindcss()],
         optimizeDeps: {
-          include: [
-            'vue',
-            '@starter/ui > reka-ui',
-            '@starter/ui > @lucide/vue',
-          ],
+          include: ['vue', '@talk-coach/ui > @lucide/vue'],
         },
         resolve: {
           dedupe: ['vue'],
           alias: {
-            '@starter/ui': fileURLToPath(
+            '@talk-coach/ui': fileURLToPath(
               new URL('./packages/ui/src/index.ts', import.meta.url),
             ),
           },

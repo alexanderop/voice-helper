@@ -1,4 +1,4 @@
-import { Result, TaggedError } from '@starter/result'
+import { Result, TaggedError } from '@talk-coach/result'
 import * as v from 'valibot'
 
 export class StorageUnavailable extends TaggedError('StorageUnavailable')<{

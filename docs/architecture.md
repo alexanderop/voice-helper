@@ -21,9 +21,9 @@ The notes feature owns its database adapter because no second feature needs a sh
 - `platform/pwa` owns service-worker registration, installation, and update readiness.
 - `packages/ui` owns reusable presentation, semantic styles, accessible interactions, and Histoire stories.
 - `packages/result` owns the `Result` type that domain, ports, application, and adapters return for expected failures.
-- `packages/composables` owns small Vue composables for browser events, media queries, connectivity, visibility, and validated `localStorage`. It depends only on Vue, Valibot, and `@starter/result`; features may import it, but `packages/ui`, domain, application, and ports may not.
+- `packages/composables` owns small Vue composables for browser events, media queries, connectivity, visibility, and validated `localStorage`. It depends only on Vue, Valibot, and `@talk-coach/result`; features may import it, but `packages/ui`, domain, application, and ports may not.
 
-`pnpm check:architecture` enforces import directions. Pure code imports only Valibot and `@starter/result` outside its feature, and does not use browser globals or Vue. UI components do not discover databases or feature adapters.
+`pnpm check:architecture` enforces import directions. Pure code imports only Valibot and `@talk-coach/result` outside its feature, and does not use browser globals or Vue. UI components do not discover databases or feature adapters.
 
 ## Verification
 

@@ -133,8 +133,8 @@
   "overrides": [
     {
       "files": [
-        "apps/playground/src/features/*/domain/**",
-        "apps/playground/src/features/*/ports/**"
+        "apps/web/src/features/*/domain/**",
+        "apps/web/src/features/*/ports/**"
       ],
       "rules": {
         "no-restricted-imports": [
@@ -142,7 +142,7 @@
           {
             "patterns": [
               {
-                "group": ["vue", "vue-router", "@starter/ui"],
+                "group": ["vue", "vue-router", "@talk-coach/ui"],
                 "message": "Domain and ports stay framework-free."
               },
               {
@@ -173,7 +173,7 @@
       }
     },
     {
-      "files": ["apps/playground/src/features/*/application/**"],
+      "files": ["apps/web/src/features/*/application/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -250,7 +250,7 @@
       }
     },
     {
-      "files": ["apps/playground/src/app/**"],
+      "files": ["apps/web/src/app/**"],
       "rules": {
         "typescript/no-unsafe-assignment": "off"
       }

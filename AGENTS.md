@@ -15,7 +15,7 @@ Use pnpm from the repository root. Keep the lockfile in sync when changing depen
 
 ## Ownership
 
-Keep features in `apps/playground/src/features`. Each feature owns its domain, application service, ports, adapters, and UI. Wire concrete dependencies in `app/bootstrap.ts`. Import other features through their public entry point.
+Keep features in `apps/web/src/features`. Each feature owns its domain, application service, ports, adapters, and UI. Wire concrete dependencies in `app/bootstrap.ts`. Import other features through their public entry point.
 
 Keep `packages/ui` independent of application features and persistence. Reuse exported production components in Histoire. Keep component examples in English. Validate browser interactions in the real application after checking them in isolation.
 

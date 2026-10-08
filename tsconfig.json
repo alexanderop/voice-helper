@@ -32,9 +32,9 @@
       "@histoire/plugin-vue/components"
     ],
     "paths": {
-      "@starter/ui": ["./packages/ui/src/index.ts"],
-      "@starter/result": ["./packages/result/src/index.ts"],
-      "@starter/composables": ["./packages/composables/src/index.ts"]
+      "@talk-coach/ui": ["./packages/ui/src/index.ts"],
+      "@talk-coach/result": ["./packages/result/src/index.ts"],
+      "@talk-coach/composables": ["./packages/composables/src/index.ts"]
     }
   },
   "include": [

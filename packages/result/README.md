@@ -1,4 +1,4 @@
-# @starter/result
+# @talk-coach/result
 
 A vendored copy of [better-result](https://github.com/dmmulroy/better-result) by [Dillon Mulroy](https://github.com/dmmulroy), released under the MIT license in [LICENSE](LICENSE). Read the [better-result documentation](https://better-result.dev) for the API.
 

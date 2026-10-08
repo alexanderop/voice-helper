@@ -61,6 +61,6 @@ jobs:
           VITE_APP_VERSION: ${{ github.sha }}
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: apps/playground/dist
+          path: apps/web/dist
       - uses: actions/deploy-pages@v4
         id: deployment

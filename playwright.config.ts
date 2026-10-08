@@ -23,16 +23,6 @@ export default defineConfig({
   projects: [
     {
       name: 'chrome',
-      testIgnore: '**/mobile.feature.spec.js',
-      use: {
-        ...devices['Desktop Chrome'],
-        channel: 'chrome',
-        launchOptions: { ignoreDefaultArgs: ['--disable-back-forward-cache'] },
-      },
-    },
-    {
-      name: 'chrome-mobile',
-      testMatch: '**/mobile.feature.spec.js',
       use: { ...devices['Pixel 7'], channel: 'chrome' },
     },
   ],

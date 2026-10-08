@@ -4,7 +4,7 @@ import ts from 'typescript'
 import { parse } from '@vue/compiler-sfc'
 
 const root = process.cwd()
-const app = path.resolve(root, 'apps/playground/src')
+const app = path.resolve(root, 'apps/web/src')
 const ui = path.resolve(root, 'packages/ui/src')
 const composables = path.resolve(root, 'packages/composables/src')
 const failures = []
@@ -23,8 +23,8 @@ function feature(file) {
 function resolveTarget(file, specifier) {
   if (specifier.startsWith('.'))
     return path.resolve(path.dirname(file), specifier)
-  if (specifier === '@starter/ui') return path.join(ui, 'index.ts')
-  if (specifier === '@starter/composables')
+  if (specifier === '@talk-coach/ui') return path.join(ui, 'index.ts')
+  if (specifier === '@talk-coach/composables')
     return path.join(composables, 'index.ts')
   return undefined
 }
@@ -78,7 +78,7 @@ for (const file of [...files(app), ...files(ui), ...files(composables)]) {
     if (
       file.startsWith(composables) &&
       ((!target &&
-        !['vue', 'valibot', '@starter/result'].includes(specifier)) ||
+        !['vue', 'valibot', '@talk-coach/result'].includes(specifier)) ||
         (target && !target.startsWith(composables)))
     )
       report('Composables depend only on Vue, Valibot, and Result')
@@ -98,7 +98,7 @@ for (const file of [...files(app), ...files(ui), ...files(composables)]) {
       report('Only composition may wire feature internals')
     if (
       pure &&
-      ((!target && !['valibot', '@starter/result'].includes(specifier)) ||
+      ((!target && !['valibot', '@talk-coach/result'].includes(specifier)) ||
         (target &&
           !/\/features\/[^/]+\/(domain|application|ports)\//.test(target)))
     )

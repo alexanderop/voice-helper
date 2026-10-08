@@ -3,15 +3,12 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
-const features = 'apps/playground/src/features'
+const features = 'apps/web/src/features'
 
 // Known violations. Each one runs as `it.fails`, so fixing it turns the test red
 // until the entry is removed here.
-const featuresWithoutEntry = new Set(['settings'])
-const oversizedComponents = new Set([
-  'apps/playground/src/features/notes/ui/NotesPage.vue',
-  'apps/playground/src/features/settings/ui/SettingsPage.vue',
-])
+const featuresWithoutEntry = new Set<string>([])
+const oversizedComponents = new Set<string>([])
 
 function sourceFiles(dir: string, extensions: readonly string[]) {
   return readdirSync(root + dir, { recursive: true, encoding: 'utf8' })
@@ -44,7 +41,7 @@ describe('given the feature folders', () => {
     },
   )
 
-  it.fails.each([...featuresWithoutEntry])(
+  it.runIf(featuresWithoutEntry.size > 0).fails.each([...featuresWithoutEntry])(
     'should expose a public index.ts in %s (known violation)',
     (name) => {
       expect(hasEntry(name)).toBe(true)
@@ -53,7 +50,7 @@ describe('given the feature folders', () => {
 })
 
 describe('given the app components', () => {
-  const components = sourceFiles('apps/playground/src', ['.vue'])
+  const components = sourceFiles('apps/web/src', ['.vue'])
 
   it('should find components to check', () => {
     expect(components.length).toBeGreaterThan(0)
@@ -68,7 +65,7 @@ describe('given the app components', () => {
     },
   )
 
-  it.fails.each([...oversizedComponents])(
+  it.runIf(oversizedComponents.size > 0).fails.each([...oversizedComponents])(
     'should keep %s under 300 lines (known violation)',
     (file) => {
       expect(lineCount(file)).toBeLessThan(300)
