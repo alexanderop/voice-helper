@@ -2,7 +2,7 @@
 import { computed, onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { Check, RotateCcw, ShieldCheck } from '@lucide/vue'
-import { UiButton } from '@talk-coach/ui'
+import { UiButton, UiWaveform } from '@talk-coach/ui'
 import { coachingLine } from '../domain/coaching'
 import { previousOfKind, type Drill } from '../domain/drill'
 import type { DrillService } from '../application/createDrillService'
@@ -96,8 +96,9 @@ function retry(drill: Drill) {
         >
       </p>
       <h1 id="result-title" class="display-title">
-        Make the point.<br />Then let it land.
+        Playback,<br />with perspective.
       </h1>
+      <UiWaveform class="divider-wave" variant="dots" :bars="44" />
       <p class="result-prompt">{{ state.drill.prompt }}</p>
       <dl class="metrics">
         <div v-for="metric in metrics" :key="metric.label" class="metric">
@@ -115,9 +116,10 @@ function retry(drill: Drill) {
       </p>
       <h2 class="section-label">Transcript</h2>
       <TranscriptView :transcript="state.drill.transcript" />
-      <hr class="rule" />
-      <h2 class="eyebrow">One thing to try</h2>
-      <p class="coaching" data-testid="coaching">{{ state.coaching }}</p>
+      <aside class="coaching-callout" aria-labelledby="coaching-title">
+        <h2 id="coaching-title" class="eyebrow">One thing to try</h2>
+        <p class="coaching" data-testid="coaching">{{ state.coaching }}</p>
+      </aside>
       <div class="page-action">
         <UiButton size="lg" @click="retry(state.drill)"
           ><RotateCcw :size="20" aria-hidden="true" />{{

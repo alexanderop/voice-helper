@@ -58,8 +58,8 @@ export default defineConfig({
         short_name: 'Talk Coach',
         description:
           'Two-minute speaking drills that count your fillers and hedges on your device.',
-        theme_color: '#FAF8F2',
-        background_color: '#FAF8F2',
+        theme_color: '#0D1626',
+        background_color: '#0D1626',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },

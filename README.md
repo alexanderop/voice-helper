@@ -61,12 +61,12 @@ pnpm test:e2e
 
 ## Workspace
 
-| Package                | Responsibility                                                                    |
-| ---------------------- | --------------------------------------------------------------------------------- |
-| `apps/web`             | The Talk Coach PWA: features, composition, IndexedDB, the speech worker           |
-| `packages/ui`          | `@talk-coach/ui`, the Plainspoken tokens, buttons, cards, the app shell, Histoire |
-| `packages/result`      | `@talk-coach/result`, typed `Result` values vendored from better-result           |
-| `packages/composables` | `@talk-coach/composables`, small Vue composables for events and `localStorage`    |
+| Package                | Responsibility                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| `apps/web`             | The Talk Coach PWA: features, composition, IndexedDB, the speech worker                    |
+| `packages/ui`          | `@talk-coach/ui`, the Signal tokens, the waveform, buttons, cards, the app shell, Histoire |
+| `packages/result`      | `@talk-coach/result`, typed `Result` values vendored from better-result                    |
+| `packages/composables` | `@talk-coach/composables`, small Vue composables for events and `localStorage`             |
 
 Read [the architecture](docs/architecture.md) for the feature layout and the import rules.
 

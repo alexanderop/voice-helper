@@ -35,15 +35,16 @@ const segments = computed(() => {
 </template>
 <style scoped>
 .transcript {
-  font-family: var(--font-display);
-  font-size: 1.0625rem;
-  line-height: 1.75;
+  font-size: 0.9375rem;
+  line-height: 1.85;
   overflow-wrap: anywhere;
 }
 mark {
   color: inherit;
   background: var(--highlight);
-  padding: 0 2px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  text-decoration-color: var(--accent);
   text-underline-offset: 4px;
   text-decoration-thickness: 2px;
 }
@@ -71,7 +72,7 @@ mark {
 .legend-hedge {
   width: 18px;
   height: 0;
-  border-top: 2px solid var(--ink);
+  border-top: 2px solid var(--accent);
 }
 .legend-hedge {
   border-top-style: dotted;

@@ -2,7 +2,13 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { LineChart, Mic, Settings2, ShieldCheck, WifiOff } from '@lucide/vue'
-import { AppShell, AppNavigation, UiButton, UiBadge } from '@talk-coach/ui'
+import {
+  AppShell,
+  AppNavigation,
+  UiButton,
+  UiBadge,
+  UiWaveform,
+} from '@talk-coach/ui'
 import type { ModelStatus } from '../features/speech'
 import { usePwa } from '../platform/pwa/usePwa'
 import { useTheme } from './useTheme'
@@ -44,7 +50,9 @@ function navigate(id: string) {
         :href="router.resolve({ name: 'today' }).href"
         class="brand"
         @click.prevent="navigate('today')"
-        ><span class="brand-mark" aria-hidden="true">t.</span>Talk Coach</a
+        ><span class="brand-mark" aria-hidden="true"
+          ><UiWaveform :bars="5" /></span
+        >Talk Coach</a
       >
       <UiBadge v-if="!pwa.online.value && !offlineReady" tone="warning"
         ><WifiOff :size="14" aria-hidden="true" />Offline</UiBadge

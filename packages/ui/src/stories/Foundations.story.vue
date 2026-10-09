@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UiButton, UiCard, UiBadge } from '../index'
+import { UiButton, UiCard, UiBadge, UiWaveform } from '../index'
 const dark = ref(false)
 const tokens = [
   'bg',
@@ -28,20 +28,20 @@ const tokens = [
         "
       >
         <header>
-          <UiBadge tone="success">Plainspoken</UiBadge>
+          <UiBadge tone="success">Signal</UiBadge>
           <h1
             style="
-              font-family: var(--font-display);
               font-size: 2.4rem;
-              letter-spacing: -0.04em;
+              font-weight: 750;
+              letter-spacing: -0.045em;
               margin-bottom: 10px;
             "
           >
-            One thought. Spoken clearly.
+            Find your clear signal.
           </h1>
           <p style="color: var(--muted); max-width: 460px; line-height: 1.7">
-            Warm paper, serif headlines, and restrained green. Language comes
-            before measurement.
+            An understated audio instrument. Crisp readouts and a quiet waveform
+            put the practice in focus.
           </p>
         </header>
         <div class="story-row">
@@ -57,6 +57,8 @@ const tokens = [
             <p style="font-size: 12px">{{ token }}</p>
           </div>
         </div>
+        <UiWaveform :bars="40" :progress="0.4" />
+        <UiWaveform variant="dots" :bars="44" />
         <UiCard style="max-width: 460px; display: grid; gap: 20px"
           ><div class="story-row">
             <UiButton>Primary action</UiButton

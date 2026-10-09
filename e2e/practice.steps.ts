@@ -14,7 +14,10 @@ Given('I open Talk Coach for the first time', async ({ page }) => {
 Then('I see the speech model setup', async ({ page }) => {
   await expect(page).toHaveURL(/#\/setup$/)
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Your voice. Your device.' }),
+    page.getByRole('heading', {
+      level: 1,
+      name: 'A small model. A private studio.',
+    }),
   ).toBeVisible()
   await expect(
     page.getByRole('button', { name: 'Download the speech model' }),

@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight, Mic, ShieldCheck, Square } from '@lucide/vue'
-import { UiButton } from '@talk-coach/ui'
+import { UiButton, UiWaveform } from '@talk-coach/ui'
 import { TIME_LIMIT_MS, type DrillKind } from '../domain/drill'
 import { daysPracticed, promptFor } from '../domain/practice'
 import { isBusy } from '../domain/session'
@@ -22,6 +22,7 @@ const route = useRoute()
 const router = useRouter()
 const recorder = useRecordingSession({ service, microphone })
 const days = ref(0)
+const sessionNumber = ref(1)
 const kind = ref<SpokenKind>(
   route.query.kind === 'opening' || route.query.kind === 'closing'
     ? route.query.kind
@@ -38,18 +39,17 @@ const prompt = computed(() =>
 const session = recorder.session
 const busy = computed(() => isBusy(session.value))
 const message = computed(() => sessionMessage(session.value))
-const dateLabel = new Date().toLocaleDateString(undefined, {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-})
-
 function clock(ms: number) {
   const seconds = Math.ceil(ms / 1000)
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 }
-const timer = computed(() =>
-  clock(recorder.remainingMs() ?? TIME_LIMIT_MS[kind.value]),
+const limitMs = computed(() => TIME_LIMIT_MS[kind.value])
+const remainingMs = computed(() => recorder.remainingMs() ?? limitMs.value)
+const timer = computed(() => clock(remainingMs.value))
+const elapsed = computed(() =>
+  session.value.status === 'recording'
+    ? 1 - remainingMs.value / limitMs.value
+    : undefined,
 )
 
 function begin(next: SpokenKind) {
@@ -59,7 +59,10 @@ function begin(next: SpokenKind) {
 
 onMounted(async () => {
   const drills = await service.list()
-  if (drills.isOk()) days.value = daysPracticed(drills.value)
+  if (drills.isErr()) return
+  days.value = daysPracticed(drills.value)
+  sessionNumber.value =
+    drills.value.filter((drill) => drill.kind !== 'import').length + 1
 })
 
 watch(session, (value) => {
@@ -70,15 +73,13 @@ watch(session, (value) => {
 <template>
   <section class="page today-page" aria-labelledby="today-title">
     <p class="page-meta">
-      <span class="eyebrow">{{ dateLabel }}</span
-      ><span v-if="days" class="page-meta__note"
+      <span class="eyebrow"
+        >Session {{ String(sessionNumber).padStart(3, '0') }}</span
+      ><span v-if="days" class="pill"
         >{{ days }} {{ days === 1 ? 'day' : 'days' }} practiced</span
       >
     </p>
-    <h1 id="today-title" class="display-title">
-      One thought.<br />Spoken clearly.
-    </h1>
-    <hr class="rule" />
+    <h1 id="today-title" class="display-title">Find your<br />clear signal.</h1>
     <p class="eyebrow">
       {{
         kind === 'drill'
@@ -87,12 +88,18 @@ watch(session, (value) => {
       }}
     </p>
     <h2 class="prompt" data-testid="prompt">{{ prompt }}</h2>
-    <p class="muted">Imagine a curious colleague is listening.</p>
-    <div class="timer-block">
+    <div class="recorder">
+      <p class="recorder__head eyebrow">
+        <span v-if="session.status === 'recording'" class="recorder__live"
+          >Recording</span
+        ><span v-else>Ready to record</span
+        ><span>{{ clock(limitMs) }} max</span>
+      </p>
       <p class="timer" role="timer" :aria-label="`Time left ${timer}`">
         {{ timer }}
       </p>
-      <p class="muted">No perfect take needed.</p>
+      <UiWaveform :bars="40" :progress="elapsed" />
+      <p class="recorder__caption">One idea. Room to pause.</p>
     </div>
     <div v-if="!practiceReady.value" class="notice">
       <p>Practice starts once the speech model is on this device.</p>
@@ -100,7 +107,7 @@ watch(session, (value) => {
         >Set up the speech model</RouterLink
       >
     </div>
-    <p class="section-label">Or, find your first and last words</p>
+    <p class="section-label">Short rehearsals</p>
     <div class="rehearse">
       <button
         v-for="option in ['opening', 'closing'] as const"
@@ -112,7 +119,7 @@ watch(session, (value) => {
       >
         <span>Rehearse {{ option }}</span
         ><span class="rehearse__time"
-          >30s <ArrowRight :size="18" aria-hidden="true"
+          >30s <ArrowRight :size="16" aria-hidden="true"
         /></span>
       </button>
     </div>
@@ -130,7 +137,7 @@ watch(session, (value) => {
         :disabled="busy || !practiceReady.value"
         :loading="session.status === 'processing'"
         @click="begin('drill')"
-        ><Mic :size="22" aria-hidden="true" />Start 2-minute drill</UiButton
+        ><Mic :size="20" aria-hidden="true" />Start 2-minute drill</UiButton
       >
       <p class="privacy">
         <ShieldCheck :size="14" aria-hidden="true" />Audio stays on this phone

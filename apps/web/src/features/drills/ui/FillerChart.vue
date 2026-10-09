@@ -5,8 +5,10 @@ import type { TrendPoint } from '../domain/practice'
 const { points } = defineProps<{ points: readonly TrendPoint[] }>()
 
 const WIDTH = 320
-const HEIGHT = 140
-const PAD = 16
+const HEIGHT = 150
+const TOP = 18
+const BOTTOM = 22
+const GAP = 0.45
 
 const dateLabel = (timestamp: number) =>
   new Date(timestamp).toLocaleDateString(undefined, {
@@ -16,15 +18,25 @@ const dateLabel = (timestamp: number) =>
 
 const chart = computed(() => {
   const max = Math.max(1, ...points.map((point) => point.fillers))
-  const step = points.length > 1 ? (WIDTH - PAD * 2) / (points.length - 1) : 0
-  const coordinates = points.map((point, index) => ({
-    ...point,
-    x: PAD + index * step,
-    y: HEIGHT - PAD - (point.fillers / max) * (HEIGHT - PAD * 2),
-  }))
+  const slot = WIDTH / Math.max(points.length, 6)
+  const width = slot * (1 - GAP)
+  const offset = (WIDTH - slot * points.length) / 2
+  const plot = HEIGHT - TOP - BOTTOM
+  const bars = points.map((point, index) => {
+    const height = Math.max(3, (point.fillers / max) * plot)
+    return {
+      ...point,
+      x: offset + index * slot + (slot - width) / 2,
+      y: TOP + plot - height,
+      width,
+      height,
+      center: offset + index * slot + slot / 2,
+      day: new Date(point.recordedAt).getDate(),
+      latest: index === points.length - 1,
+    }
+  })
   return {
-    coordinates,
-    line: coordinates.map(({ x, y }) => `${x},${y}`).join(' '),
+    bars,
     description: points
       .map(
         (point, index) =>
@@ -44,21 +56,29 @@ const chart = computed(() => {
     <title id="filler-chart-title">Fillers per drill, oldest to newest</title>
     <desc id="filler-chart-desc">{{ chart.description }}.</desc>
     <line
-      :x1="PAD"
-      :x2="WIDTH - PAD"
-      :y1="HEIGHT - PAD"
-      :y2="HEIGHT - PAD"
-      class="filler-chart__axis"
+      v-for="fraction in [0, 0.5]"
+      :key="fraction"
+      x1="0"
+      :x2="WIDTH"
+      :y1="TOP + fraction * (HEIGHT - TOP - BOTTOM)"
+      :y2="TOP + fraction * (HEIGHT - TOP - BOTTOM)"
+      class="filler-chart__grid"
     />
-    <polyline
-      v-if="chart.coordinates.length > 1"
-      :points="chart.line"
-      class="filler-chart__line"
-    />
-    <g v-for="point in chart.coordinates" :key="point.id">
-      <circle :cx="point.x" :cy="point.y" r="4" class="filler-chart__dot" />
-      <text :x="point.x" :y="point.y - 10" class="filler-chart__label">
-        {{ point.fillers }}
+    <g v-for="bar in chart.bars" :key="bar.id">
+      <rect
+        :x="bar.x"
+        :y="bar.y"
+        :width="bar.width"
+        :height="bar.height"
+        rx="2"
+        class="filler-chart__bar"
+        :class="{ 'filler-chart__bar--latest': bar.latest }"
+      />
+      <text :x="bar.center" :y="bar.y - 6" class="filler-chart__value">
+        {{ bar.fillers }}
+      </text>
+      <text :x="bar.center" :y="HEIGHT - 6" class="filler-chart__day">
+        {{ bar.day }}
       </text>
     </g>
   </svg>
@@ -70,24 +90,27 @@ const chart = computed(() => {
   height: auto;
   overflow: visible;
 }
-.filler-chart__axis {
+.filler-chart__grid {
   stroke: var(--line);
   stroke-dasharray: 3 4;
 }
-.filler-chart__line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2.5;
-}
-.filler-chart__dot {
+.filler-chart__bar {
   fill: var(--accent);
-  stroke: var(--bg);
-  stroke-width: 2;
 }
-.filler-chart__label {
+.filler-chart__bar--latest {
   fill: var(--ink);
-  font-family: var(--font-display);
-  font-size: 11px;
+}
+.filler-chart__value,
+.filler-chart__day {
+  font-family: var(--font-mono);
+  font-size: 9px;
   text-anchor: middle;
+}
+.filler-chart__value {
+  fill: var(--ink);
+  font-weight: 600;
+}
+.filler-chart__day {
+  fill: var(--muted);
 }
 </style>

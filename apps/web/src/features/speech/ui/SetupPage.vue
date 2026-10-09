@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Download, ShieldCheck } from '@lucide/vue'
-import { UiButton } from '@talk-coach/ui'
+import { UiButton, UiWaveform } from '@talk-coach/ui'
 import {
   ENGINE_SIZE_LABEL,
   MODEL_SIZE_LABEL,
@@ -55,12 +55,13 @@ function act() {
 </script>
 <template>
   <section class="page setup-page" aria-labelledby="setup-title">
-    <p class="eyebrow setup-page__kicker">One-time setup</p>
+    <p class="eyebrow">One-time setup</p>
     <div class="setup-emblem" aria-hidden="true">
-      <span>Aa</span><ShieldCheck :size="22" class="setup-emblem__shield" />
+      <UiWaveform :bars="34" />
+      <span class="eyebrow setup-emblem__caption">Voice → device</span>
     </div>
-    <h1 id="setup-title" class="display-title setup-page__title">
-      Your voice.<br />Your device.
+    <h1 id="setup-title" class="display-title">
+      A small model.<br />A private studio.
     </h1>
     <p class="setup-page__lead">
       Download the {{ MODEL_SIZE_LABEL }} speech model and its

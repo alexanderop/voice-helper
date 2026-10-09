@@ -46,7 +46,6 @@ const themes = [
   <section class="page settings-page" aria-labelledby="settings-title">
     <p class="eyebrow">Settings</p>
     <h1 id="settings-title" class="display-title">Make it yours.</h1>
-    <hr class="rule" />
     <UiCard element="section" class="settings-card"
       ><h2 class="section-heading">Appearance</h2>
       <fieldset class="theme-picker">
