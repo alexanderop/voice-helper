@@ -3,9 +3,11 @@ import { computed, onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { Check, RotateCcw, ShieldCheck } from '@lucide/vue'
 import { UiButton, UiWaveform } from '@talk-coach/ui'
+import { justPracticed, practiceCalendar } from '../domain/calendar'
 import { coachingLine } from '../domain/coaching'
 import { previousOfKind, type Drill } from '../domain/drill'
 import type { DrillService } from '../application/createDrillService'
+import { daysOfGoal, remainingLine, streakHeadline } from './streakMessages'
 import TranscriptView from './TranscriptView.vue'
 
 const { service, id } = defineProps<{ service: DrillService; id: string }>()
@@ -14,7 +16,12 @@ const state = shallowRef<
   | { status: 'loading' }
   | { status: 'missing' }
   | { status: 'failed' }
-  | { status: 'ready'; drill: Drill; coaching: string }
+  | {
+      status: 'ready'
+      drill: Drill
+      coaching: string
+      streak: { current: number; practiced: number } | undefined
+    }
 >({ status: 'loading' })
 
 onMounted(async () => {
@@ -24,13 +31,23 @@ onMounted(async () => {
     return
   }
   const drill = drills.value.find((item) => item.id === id)
-  state.value = drill
-    ? {
-        status: 'ready',
-        drill,
-        coaching: coachingLine(drill, previousOfKind(drills.value, drill)),
-      }
-    : { status: 'missing' }
+  if (!drill) {
+    state.value = { status: 'missing' }
+    return
+  }
+  const now = Date.now()
+  const calendar = practiceCalendar(drills.value, now)
+  state.value = {
+    status: 'ready',
+    drill,
+    coaching: coachingLine(drill, previousOfKind(drills.value, drill)),
+    streak: justPracticed(drills.value, drill, now)
+      ? {
+          current: calendar.current,
+          practiced: calendar.weeks.at(-1)?.practiced ?? 0,
+        }
+      : undefined,
+  }
 })
 
 function minutes(ms: number | null) {
@@ -85,6 +102,19 @@ function retry(drill: Drill) {
       >
     </template>
     <template v-else>
+      <aside
+        v-if="state.streak"
+        class="notice streak-banner"
+        aria-label="Practice streak"
+      >
+        <p class="streak-banner__title">
+          {{ streakHeadline(state.streak.current) }}
+        </p>
+        <p>
+          {{ daysOfGoal(state.streak.practiced) }} this week.
+          {{ remainingLine(state.streak.practiced) }}
+        </p>
+      </aside>
       <p class="page-meta">
         <span class="eyebrow"
           >{{
