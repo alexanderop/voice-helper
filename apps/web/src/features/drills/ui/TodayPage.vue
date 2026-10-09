@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight, Mic, ShieldCheck, Square } from '@lucide/vue'
 import { UiButton, UiWaveform } from '@talk-coach/ui'
 import { TIME_LIMIT_MS, type DrillKind } from '../domain/drill'
-import { daysPracticed, promptFor } from '../domain/practice'
+import { practiceCalendar, type PracticeCalendar } from '../domain/calendar'
+import { promptFor } from '../domain/practice'
 import { isBusy } from '../domain/session'
 import type { DrillService } from '../application/createDrillService'
 import type { Microphone } from '../ports/ports'
+import PracticeStreak from './PracticeStreak.vue'
 import { useRecordingSession } from './useRecordingSession'
 import { sessionMessage } from './sessionMessages'
 
@@ -21,7 +23,7 @@ const { service, microphone, practiceReady } = defineProps<{
 const route = useRoute()
 const router = useRouter()
 const recorder = useRecordingSession({ service, microphone })
-const days = ref(0)
+const calendar = shallowRef<PracticeCalendar>()
 const sessionNumber = ref(1)
 const kind = ref<SpokenKind>(
   route.query.kind === 'opening' || route.query.kind === 'closing'
@@ -60,7 +62,7 @@ function begin(next: SpokenKind) {
 onMounted(async () => {
   const drills = await service.list()
   if (drills.isErr()) return
-  days.value = daysPracticed(drills.value)
+  calendar.value = practiceCalendar(drills.value, Date.now())
   sessionNumber.value =
     drills.value.filter((drill) => drill.kind !== 'import').length + 1
 })
@@ -72,14 +74,9 @@ watch(session, (value) => {
 </script>
 <template>
   <section class="page today-page" aria-labelledby="today-title">
-    <p class="page-meta">
-      <span class="eyebrow"
-        >Session {{ String(sessionNumber).padStart(3, '0') }}</span
-      ><span v-if="days" class="pill"
-        >{{ days }} {{ days === 1 ? 'day' : 'days' }} practiced</span
-      >
-    </p>
+    <p class="eyebrow">Session {{ String(sessionNumber).padStart(3, '0') }}</p>
     <h1 id="today-title" class="display-title">Find your<br />clear signal.</h1>
+    <PracticeStreak v-if="calendar && calendar.best > 0" :calendar="calendar" />
     <p class="eyebrow">
       {{
         kind === 'drill'

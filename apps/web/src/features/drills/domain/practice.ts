@@ -1,4 +1,5 @@
 import { fillerCount, fillersPerMinute } from './analysis'
+import { dayNumber } from './calendar'
 import type { Drill, DrillKind } from './drill'
 
 const PROMPTS: readonly string[] = [
@@ -19,19 +20,6 @@ const PROMPTS: readonly string[] = [
 const OPENING_PROMPT = 'Open your talk. Say your first 30 seconds.'
 const CLOSING_PROMPT = 'Close your talk. Say your last 30 seconds.'
 
-/** Local calendar day, so a drill at 23:30 counts for that evening. */
-function dayKey(timestamp: number): string {
-  const date = new Date(timestamp)
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-}
-
-function dayNumber(timestamp: number): number {
-  const date = new Date(timestamp)
-  return Math.floor(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000,
-  )
-}
-
 /** The prompt rotates once a day, the same for every drill that day. */
 export function promptFor(
   kind: Exclude<DrillKind, 'import'>,
@@ -41,18 +29,6 @@ export function promptFor(
   if (kind === 'closing') return { prompt: CLOSING_PROMPT, number: 0 }
   const index = dayNumber(now) % PROMPTS.length
   return { prompt: PROMPTS[index] ?? PROMPTS[0] ?? '', number: index + 1 }
-}
-
-/**
- * Days with at least one spoken drill. It only counts up, so a missed day
- * never takes anything away.
- */
-export function daysPracticed(drills: readonly Drill[]): number {
-  return new Set(
-    drills
-      .filter((drill) => drill.kind !== 'import')
-      .map((drill) => dayKey(drill.recordedAt)),
-  ).size
 }
 
 export type TrendPoint = {

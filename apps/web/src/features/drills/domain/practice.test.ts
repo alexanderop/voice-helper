@@ -1,48 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { analyze } from './analysis'
-import type { Drill, DrillKind } from './drill'
-import {
-  daysPracticed,
-  fillerTrend,
-  importedTalks,
-  promptFor,
-} from './practice'
-
-function drill(kind: DrillKind, recordedAt: number, transcript: string): Drill {
-  return timed(kind, recordedAt, [transcript, 60_000])
-}
-
-function timed(
-  kind: DrillKind,
-  recordedAt: number,
-  [transcript, durationMs]: readonly [string, number | null],
-): Drill {
-  return {
-    id: `${kind}-${recordedAt}`,
-    kind,
-    prompt:
-      kind === 'import' ? 'Vue.js Talks #16' : 'Explain what an agent is.',
-    recordedAt,
-    durationMs,
-    transcript,
-    analysis: analyze(transcript, durationMs, []),
-  }
-}
+import { drill, timed } from './fixtures'
+import { fillerTrend, importedTalks, promptFor } from './practice'
 
 const day = (date: string, time = '09:00') =>
   new Date(`${date}T${time}`).getTime()
 
 describe('practice', () => {
-  it('counts distinct local days with a spoken drill and ignores imports', () => {
-    const drills = [
-      drill('drill', day('2026-10-06'), 'One.'),
-      drill('opening', day('2026-10-06', '21:00'), 'Two.'),
-      drill('closing', day('2026-10-08'), 'Three.'),
-      drill('import', day('2026-10-07'), 'Four.'),
-    ]
-    expect(daysPracticed(drills)).toBe(2)
-  })
-
   it('charts filler counts oldest first without imports', () => {
     const drills = [
       drill('drill', 3, 'Um, yeah.'),

@@ -269,6 +269,89 @@
   font-size: 0.9375rem;
   line-height: 1.5;
 }
+.streak-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+}
+.streak-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.streak-card__title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.streak-card__week {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.day-mark {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: var(--soft);
+}
+.day-mark[data-state='practiced'] {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.day-mark[data-state='today'] {
+  border: 2px dashed var(--accent);
+  background: transparent;
+}
+.day-mark[data-state='future'] {
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+}
+.week-dots {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.week-dots li {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.week-dots .day-mark {
+  max-width: 32px;
+}
+.week-dots .day-mark[data-state='future'] {
+  border: 2px solid transparent;
+  background: var(--soft);
+}
+.week-dots__name {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--muted);
+}
+.goal-bar {
+  width: 100%;
+  height: 6px;
+  border: 0;
+  border-radius: 3px;
+  appearance: none;
+  background: var(--line);
+  overflow: hidden;
+}
+.goal-bar::-webkit-progress-bar {
+  background: var(--line);
+}
+.goal-bar::-webkit-progress-value {
+  background: var(--accent);
+}
+.goal-bar::-moz-progress-bar {
+  background: var(--accent);
+}
 .trend-card {
   display: grid;
   gap: 12px;
