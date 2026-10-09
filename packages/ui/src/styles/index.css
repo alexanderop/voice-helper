@@ -231,6 +231,10 @@ button:not(:disabled) {
   color: var(--ink);
 }
 .ui-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
   width: min(100%, 640px);
   margin: 0 auto;
   min-height: 56px;
@@ -241,6 +245,7 @@ button:not(:disabled) {
   gap: 12px;
 }
 .ui-app-main {
+  scroll-margin-top: calc(56px + env(safe-area-inset-top));
   width: min(100%, 640px);
   margin: 0 auto;
   padding: 20px max(20px, env(safe-area-inset-right))
