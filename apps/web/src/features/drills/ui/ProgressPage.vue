@@ -84,7 +84,7 @@ const day = (timestamp: number) =>
         <FillerChart :points="trend" />
         <p class="trend-card__foot">
           <span>{{ range }}</span
-          ><span>yeah + um / uh</span>
+          ><span>yeah + other fillers</span>
         </p>
       </template>
       <p v-else class="muted">

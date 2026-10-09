@@ -1,6 +1,7 @@
 import * as v from 'valibot'
 import {
   CATEGORY_OF_GROUP,
+  HABIT_WORDS,
   LEXICON,
   normalizeWord,
   type MarkCategory,
@@ -19,6 +20,15 @@ export type Mark = {
 }
 
 export const PAUSE_MIN_MS = 1000
+
+/**
+ * A habit word is overused at 4 uses and 2% of the words, one word in fifty.
+ * The share scales with length: a two-minute take near 140 words a minute
+ * needs about 6 uses. The count floor keeps a 60-word take from flagging two
+ * uses of "really".
+ */
+const HABIT_MIN_COUNT = 4
+const HABIT_MIN_SHARE = 0.02
 
 const count = v.pipe(v.number(), v.integer(), v.minValue(0))
 export const analysisSchema = v.object({
@@ -47,6 +57,12 @@ function words(transcript: string): Word[] {
   )
 }
 
+const startsAt = (
+  list: readonly Word[],
+  index: number,
+  parts: readonly string[],
+) => parts.every((part, offset) => list[index + offset]?.norm === part)
+
 const ENTRIES = LEXICON.map((entry) => ({
   ...entry,
   parts: entry.term.split(' '),
@@ -56,10 +72,43 @@ function matchAt(list: readonly Word[], index: number) {
   const previous = list[index - 1]?.norm
   return ENTRIES.find(
     (entry) =>
-      entry.parts.every(
-        (part, offset) => list[index + offset]?.norm === part,
-      ) && !(previous !== undefined && entry.notAfter?.includes(previous)),
+      startsAt(list, index, entry.parts) &&
+      !(previous !== undefined && entry.notAfter?.includes(previous)),
   )
+}
+
+const HABITS = HABIT_WORDS.map((term) => ({ term, parts: term.split(' ') }))
+
+export type HabitWord = { readonly term: string; readonly count: number }
+
+/** Habit words outside counted phrases, so the "so" in "so yeah" stays a filler. */
+function habitCounts(list: readonly Word[]): Map<string, number> {
+  const counts = new Map<string, number>()
+  let index = 0
+  while (index < list.length) {
+    const mark = matchAt(list, index)
+    const habit = mark
+      ? undefined
+      : HABITS.find((entry) => startsAt(list, index, entry.parts))
+    if (habit) counts.set(habit.term, (counts.get(habit.term) ?? 0) + 1)
+    index += (mark ?? habit)?.parts.length ?? 1
+  }
+  return counts
+}
+
+/**
+ * The habit word used most, if it crosses both thresholds. A tie goes to the
+ * word listed first in `HABIT_WORDS`.
+ */
+export function overusedHabitWord(transcript: string): HabitWord | undefined {
+  const list = words(transcript)
+  const counts = habitCounts(list)
+  const top = HABITS.map(({ term }) => ({ term, count: counts.get(term) ?? 0 }))
+    .toSorted((a, b) => b.count - a.count)
+    .at(0)
+  if (!top || top.count < HABIT_MIN_COUNT) return undefined
+  if (top.count < list.length * HABIT_MIN_SHARE) return undefined
+  return top
 }
 
 /** Multi-word phrases win over single words: "and yeah" is one mark, not "yeah". */

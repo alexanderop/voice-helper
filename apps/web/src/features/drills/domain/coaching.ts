@@ -1,4 +1,10 @@
-import { fillersPerMinute, findMarks, type Mark } from './analysis'
+import {
+  fillerCount,
+  fillersPerMinute,
+  findMarks,
+  overusedHabitWord,
+  type Mark,
+} from './analysis'
 import type { Drill } from './drill'
 
 type CoachingContext = {
@@ -70,10 +76,28 @@ const COACHING_RULES: readonly CoachingRule[] = [
     },
   },
   {
+    id: 'habit-word',
+    line: ({ drill }) => {
+      const habit = overusedHabitWord(drill.transcript)
+      if (!habit) return undefined
+      const word = habit.term.charAt(0).toUpperCase() + habit.term.slice(1)
+      return `"${word}" came up ${habit.count} times. Swap one for a pause.`
+    },
+  },
+  {
+    id: 'silence-working',
+    line: ({ drill }) => {
+      const pauses = drill.analysis.pauseCount
+      const fillers = fillerCount(drill.analysis)
+      if (pauses === null || fillers === 0 || pauses <= fillers)
+        return undefined
+      return `You paused ${times(pauses)} and filled a gap ${times(fillers)}. Silence is working.`
+    },
+  },
+  {
     id: 'clean-take',
     line: ({ drill }) => {
-      if (drill.analysis.groups.yeah + drill.analysis.groups.um > 0)
-        return undefined
+      if (fillerCount(drill.analysis) > 0) return undefined
       return 'No fillers counted. Try the same prompt a little slower.'
     },
   },

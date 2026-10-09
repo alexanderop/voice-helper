@@ -6,4 +6,4 @@ Feature: Offline shell
     And I disconnect from the network and reopen Progress
     Then "vue-talk.vtt" is listed with 3 fillers per minute
     When I open the imported talk
-    Then the result shows 2 yeah, 1 um or uh, and 2 hedges
+    Then the result shows 2 yeah, 1 other fillers, and 2 hedges

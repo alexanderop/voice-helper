@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { analyze, findMarks } from './analysis'
+import { analyze, findMarks, overusedHabitWord } from './analysis'
 
 describe('analyze', () => {
   it('counts the research filler prompt by term and group', () => {
@@ -42,6 +42,40 @@ describe('analyze', () => {
     })
   })
 
+  it('counts "you know" as a filler, but not after a question or clause word', () => {
+    expect(
+      analyze(
+        'You know, it is a loop. Do you know why? If you know tools, I will let you know.',
+        60_000,
+        [],
+      ).terms,
+    ).toEqual({ 'you know': 1 })
+  })
+
+  it('counts vague tails and "I don\'t know" as hedges', () => {
+    const result = analyze(
+      "It calls a tool or something. Logs and stuff, or whatever. I don't know.",
+      60_000,
+      [],
+    )
+    expect([result.groups, result.terms]).toEqual([
+      { yeah: 0, um: 0, hedge: 4 },
+      {
+        'or something': 1,
+        'and stuff': 1,
+        'or whatever': 1,
+        "i don't know": 1,
+      },
+    ])
+  })
+
+  it('does not count habit words', () => {
+    expect(
+      analyze('So basically it is like, just, really right.', 60_000, [])
+        .groups,
+    ).toEqual({ yeah: 0, um: 0, hedge: 0 })
+  })
+
   it('counts only pauses of at least one second', () => {
     const pauses = [
       { startMs: 0, durationMs: 999 },
@@ -74,5 +108,47 @@ describe('findMarks', () => {
       ['maybe', 'hedge'],
       ['And yeah', 'filler'],
     ])
+  })
+})
+
+describe('overusedHabitWord', () => {
+  const plain = (count: number) => ' The agent calls a tool.'.repeat(count)
+
+  it('names the most used habit word once it crosses both thresholds', () => {
+    expect(
+      overusedHabitWord(
+        `Basically, it is a loop. It basically calls tools, basically. So basically, so it works.${plain(10)}`,
+      ),
+    ).toEqual({ term: 'basically', count: 4 })
+  })
+
+  it('needs at least four uses', () => {
+    expect(
+      overusedHabitWord('Really, it is really a loop. Really fast.'),
+    ).toBeUndefined()
+  })
+
+  it('needs the word to be at least 2% of the transcript', () => {
+    expect(
+      overusedHabitWord(`Just, just, just, just.${plain(40)}`),
+    ).toBeUndefined()
+  })
+
+  it('counts multi-word habits and the OK spelling', () => {
+    expect([
+      overusedHabitWord('I mean, I mean it. I mean, I mean, a loop.'),
+      overusedHabitWord('OK, okay, ok, Okay.'),
+    ]).toEqual([
+      { term: 'i mean', count: 4 },
+      { term: 'okay', count: 4 },
+    ])
+  })
+
+  it('skips words already inside a counted phrase', () => {
+    expect(
+      overusedHabitWord(
+        'So yeah. So yeah. So yeah. So yeah. I feel like, I feel like it.',
+      ),
+    ).toBeUndefined()
   })
 })

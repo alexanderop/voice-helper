@@ -62,7 +62,7 @@ const metrics = computed(() => {
   const { analysis } = state.value.drill
   return [
     { label: 'yeah', value: String(analysis.groups.yeah) },
-    { label: 'um / uh', value: String(analysis.groups.um) },
+    { label: 'Other fillers', value: String(analysis.groups.um) },
     { label: 'Hedges', value: String(analysis.groups.hedge) },
     { label: 'Pauses', value: known(analysis.pauseCount) },
     { label: 'Words/min', value: known(analysis.wordsPerMinute) },

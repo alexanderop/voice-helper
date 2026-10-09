@@ -64,7 +64,7 @@ When('I import the caption file {string}', async ({ page }, name: string) => {
 })
 
 Then(
-  'the result shows {int} yeah, {int} um or uh, and {int} hedges',
+  'the result shows {int} yeah, {int} other fillers, and {int} hedges',
   async ({ page }, yeah: number, um: number, hedges: number) => {
     const metric = (label: string) =>
       page
@@ -72,7 +72,7 @@ Then(
         .filter({ has: page.getByText(label, { exact: true }) })
         .locator('dd')
     await expect(metric('yeah')).toHaveText(String(yeah))
-    await expect(metric('um / uh')).toHaveText(String(um))
+    await expect(metric('Other fillers')).toHaveText(String(um))
     await expect(metric('Hedges')).toHaveText(String(hedges))
     await expect(
       page.getByText('Captions often drop um and uh', { exact: false }),

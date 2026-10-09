@@ -10,7 +10,7 @@ Feature: Practice without the speech model
   Scenario: Imported captions are counted and kept
     Given I open Talk Coach for the first time
     When I import the caption file "vue-talk.vtt"
-    Then the result shows 2 yeah, 1 um or uh, and 2 hedges
+    Then the result shows 2 yeah, 1 other fillers, and 2 hedges
     And the transcript marks "um" as a filler and "maybe" as a hedge
     When I reload the app on Progress
     Then "vue-talk.vtt" is listed with 3 fillers per minute

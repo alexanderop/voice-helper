@@ -18,8 +18,8 @@ Valibot schemas define `Drill` and `Analysis`. The IndexedDB adapter parses ever
 
 ## Rules as tables
 
-- `domain/lexicon.ts` lists every counted phrase with its group. The matcher tries multi-word phrases first, so "and yeah" counts once, not as "yeah". "Kind of" and "sort of" do not count after a determiner such as "what". The file explains which words are left out and why.
-- `domain/coaching.ts` is an ordered list of rules. The first rule that returns a line wins: hedges in the first three sentences, a filler rate 20% lower or higher than the previous drill of the same kind, three or more "yeah", a take with no fillers, and a fallback.
+- `domain/lexicon.ts` lists every counted phrase with its group. The matcher tries multi-word phrases first, so "and yeah" counts once, not as "yeah". "Kind of" and "sort of" do not count after a determiner such as "what", and "you know" does not count after a word such as "do" or "if". `HABIT_WORDS` lists words such as "basically" and "so" that are never counted one by one; `overusedHabitWord` in `domain/analysis.ts` names one only when it reaches 4 uses and 2% of the words. The file explains which words are left out and why.
+- `domain/coaching.ts` is an ordered list of rules. The first rule that returns a line wins: hedges in the first three sentences, a filler rate 20% lower or higher than the previous drill of the same kind, three or more "yeah", an overused habit word, more pauses than fillers in a take with at least one filler, a take with no fillers, and a fallback.
 - `domain/session.ts` is the recording lifecycle: `idle`, `requesting-mic`, `recording`, `processing`, `done`, and `error`. A table names the events each state accepts. Any other event leaves the state unchanged.
 - `speech/domain/model.ts` is the model lifecycle: `checking`, `missing`, `downloading`, `loading`, `ready`, and `failed`.
 

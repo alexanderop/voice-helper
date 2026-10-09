@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { analyze } from './analysis'
+import { analyze, type Pause } from './analysis'
 import { coachingLine } from './coaching'
 import type { Drill } from './drill'
 
@@ -17,6 +17,13 @@ function drill(
     transcript,
     analysis: analyze(transcript, durationMs, []),
   }
+}
+
+function withPauses(
+  transcript: string,
+  pauses: readonly Pause[] | null,
+): Drill {
+  return { ...drill(transcript), analysis: analyze(transcript, 60_000, pauses) }
 }
 
 describe('coachingLine', () => {
@@ -61,6 +68,50 @@ describe('coachingLine', () => {
     expect(
       coachingLine(drill('Yeah. It works, yeah. Tools, yeah.'), undefined),
     ).toBe('"Yeah" came up 3 times. Let a sentence end in silence instead.')
+  })
+
+  it('points out an overused habit word', () => {
+    expect(
+      coachingLine(
+        drill(
+          'An agent is basically a loop. It basically calls tools. Basically it reads, basically it writes.',
+        ),
+        undefined,
+      ),
+    ).toBe('"Basically" came up 4 times. Swap one for a pause.')
+  })
+
+  it('leaves habit words alone below the threshold', () => {
+    expect(
+      coachingLine(
+        drill('So an agent is a loop. So it calls tools. So it works.'),
+        undefined,
+      ),
+    ).toBe('No fillers counted. Try the same prompt a little slower.')
+  })
+
+  it('names pauses that outnumber fillers', () => {
+    const pauses = [0, 3000, 6000].map((startMs) => ({
+      startMs,
+      durationMs: 1500,
+    }))
+    expect(
+      coachingLine(
+        withPauses('An agent, um, is a loop with tools.', pauses),
+        undefined,
+      ),
+    ).toBe('You paused 3 times and filled a gap once. Silence is working.')
+  })
+
+  it('stays quiet about pauses when fillers keep up or pauses are unknown', () => {
+    const take = 'An agent, um, is a loop with tools.'
+    const onePause = [{ startMs: 0, durationMs: 1500 }]
+    const fallback =
+      'One thought, spoken out loud. That is the practice. Come back tomorrow.'
+    expect([
+      coachingLine(withPauses(take, onePause), undefined),
+      coachingLine(withPauses(take, null), undefined),
+    ]).toEqual([fallback, fallback])
   })
 
   it('falls back to an encouraging line', () => {
