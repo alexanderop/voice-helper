@@ -4,7 +4,7 @@ Talk Coach is one Vue app in `apps/web`. Each feature owns its domain rules, app
 
 ## Features
 
-- `features/drills` owns the product. `domain/` holds the `Drill` and `Analysis` schemas, the lexicon of fillers and hedges, the coaching rules, caption parsing, pause detection, the practice helpers, and the session state machine. `application/createDrillService.ts` decodes, transcribes, analyzes, and saves through the ports in `ports/ports.ts`. `adapters/indexeddb` stores drills. `ui/` holds Today, Result, and Progress.
+- `features/drills` owns the product. `domain/` holds the `Drill` and `Analysis` schemas, the lexicon of fillers and hedges, the coaching rules, caption parsing, pause detection, the practice helpers, the practice calendar, and the session state machine. `application/createDrillService.ts` decodes, transcribes, analyzes, and saves through the ports in `ports/ports.ts`. `adapters/indexeddb` stores drills. `ui/` holds Today, Result, and Progress.
 - `features/speech` owns the Whisper model. `domain/model.ts` names the model, the filler prompt, the cached files, and the `ModelStatus` union. `adapters/whisper.worker.ts` runs transformers.js in a Web Worker. `adapters/createWhisperTranscriber.ts` talks to that worker and implements the drills `Transcriber` port. `adapters/modelCache.ts` checks the Cache API. `ui/SetupPage.vue` is the first-launch screen.
 - `features/settings` owns the theme picker, the data export and delete, and the diagnostics panel. It receives everything through props.
 
@@ -22,6 +22,10 @@ Valibot schemas define `Drill` and `Analysis`. The IndexedDB adapter parses ever
 - `domain/coaching.ts` is an ordered list of rules. The first rule that returns a line wins: hedges in the first three sentences, a filler rate 20% lower or higher than the previous drill of the same kind, three or more "yeah", a take with no fillers, and a fallback.
 - `domain/session.ts` is the recording lifecycle: `idle`, `requesting-mic`, `recording`, `processing`, `done`, and `error`. A table names the events each state accepts. Any other event leaves the state unchanged.
 - `speech/domain/model.ts` is the model lifecycle: `checking`, `missing`, `downloading`, `loading`, `ready`, and `failed`.
+
+## Practice calendar
+
+`domain/calendar.ts` turns the drill list into one `PracticeCalendar`: the current streak, the best streak, and the last five Monday-to-Sunday weeks. Each day is `practiced`, `missed`, `today` (not yet practiced), or `future`. A practice day is a local calendar day with at least one spoken drill, so imports do not count. The current streak counts back from yesterday until today has a drill, so it never looks broken mid-day. The weekly goal is `WEEKLY_GOAL_DAYS` practiced days, not drills. Today, Progress, and Result all read this one value, and `ui/streakMessages.ts` holds their shared copy.
 
 ## Speech model
 
