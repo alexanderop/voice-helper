@@ -1,6 +1,7 @@
 export { default as UiButton } from './components/UiButton.vue'
 export { default as UiCard } from './components/UiCard.vue'
 export { default as UiBadge } from './components/UiBadge.vue'
+export { default as UiLogo } from './components/UiLogo.vue'
 export { default as UiWaveform } from './components/UiWaveform.vue'
 export { default as AppShell } from './patterns/AppShell.vue'
 export { default as AppNavigation } from './patterns/AppNavigation.vue'

@@ -7,7 +7,7 @@ import {
   AppNavigation,
   UiButton,
   UiBadge,
-  UiWaveform,
+  UiLogo,
 } from '@talk-coach/ui'
 import type { ModelStatus } from '../features/speech'
 import { usePwa } from '../platform/pwa/usePwa'
@@ -50,8 +50,7 @@ function navigate(id: string) {
         :href="router.resolve({ name: 'today' }).href"
         class="brand"
         @click.prevent="navigate('today')"
-        ><span class="brand-mark" aria-hidden="true"
-          ><UiWaveform :bars="5" /></span
+        ><span class="brand-mark" aria-hidden="true"><UiLogo compact /></span
         >Talk Coach</a
       >
       <UiBadge v-if="!pwa.online.value && !offlineReady" tone="warning"

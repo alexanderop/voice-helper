@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Download, ShieldCheck } from '@lucide/vue'
-import { UiButton, UiWaveform } from '@talk-coach/ui'
+import { UiButton, UiLogo } from '@talk-coach/ui'
 import {
   ENGINE_SIZE_LABEL,
   MODEL_SIZE_LABEL,
@@ -57,7 +57,7 @@ function act() {
   <section class="page setup-page" aria-labelledby="setup-title">
     <p class="eyebrow">One-time setup</p>
     <div class="setup-emblem" aria-hidden="true">
-      <UiWaveform :bars="34" />
+      <UiLogo />
       <span class="eyebrow setup-emblem__caption">Voice → device</span>
     </div>
     <h1 id="setup-title" class="display-title">
