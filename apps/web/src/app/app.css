@@ -352,6 +352,71 @@
 .goal-bar::-moz-progress-bar {
   background: var(--accent);
 }
+.history-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+.history-card__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.week-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+  table-layout: fixed;
+}
+.week-grid th,
+.week-grid td {
+  padding: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.week-grid th:first-child {
+  width: 3.4rem;
+  text-align: left;
+}
+.week-grid th:last-child {
+  width: 1.6rem;
+}
+.week-grid td {
+  padding: 0 3px;
+}
+.week-grid .day-mark {
+  border-radius: 6px;
+}
+.week-grid__count {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.week-grid__count--met {
+  color: var(--ink);
+  font-weight: 750;
+}
+.week-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+.week-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.week-legend .day-mark {
+  width: 12px;
+  border-width: 1.5px;
+  border-radius: 3px;
+}
 .trend-card {
   display: grid;
   gap: 12px;

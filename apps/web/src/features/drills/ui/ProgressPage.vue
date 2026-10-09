@@ -3,11 +3,13 @@ import { computed, onMounted, shallowRef } from 'vue'
 import { FileAudio, FileText } from '@lucide/vue'
 import { UiCard } from '@talk-coach/ui'
 import { fillerCount } from '../domain/analysis'
+import { practiceCalendar } from '../domain/calendar'
 import type { Drill, DrillKind } from '../domain/drill'
 import { fillerTrend, importedTalks } from '../domain/practice'
 import type { DrillService } from '../application/createDrillService'
 import FillerChart from './FillerChart.vue'
 import ImportPanel from './ImportPanel.vue'
+import PracticeHistory from './PracticeHistory.vue'
 
 const { service, practiceReady } = defineProps<{
   service: DrillService
@@ -22,6 +24,7 @@ onMounted(async () => {
   else failed.value = true
 })
 
+const calendar = computed(() => practiceCalendar(drills.value, Date.now()))
 const trend = computed(() => fillerTrend(drills.value))
 const talks = computed(() => importedTalks(drills.value))
 const spoken = computed(() =>
@@ -61,6 +64,7 @@ const day = (timestamp: number) =>
       Your signal,<br />over time.
     </h1>
     <p v-if="failed" role="alert">Your drills could not be read.</p>
+    <PracticeHistory v-if="calendar.best > 0" :calendar="calendar" />
     <UiCard element="section" class="trend-card" aria-labelledby="trend-title">
       <div class="trend-card__head">
         <h2 id="trend-title">Fillers per drill</h2>
